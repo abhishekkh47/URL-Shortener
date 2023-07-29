@@ -6,7 +6,7 @@ const shortUrl = async (req, res) => {
 
     if (validateUrl(origUrl)) {
         try {
-            let url = fetchUrl(origUrl);
+            let url = fetchExistingUrl(origUrl);
             if (url.length > 0) {
                 res.status(200).json(url);
             }
@@ -24,12 +24,35 @@ const shortUrl = async (req, res) => {
 }
 
 const getAllShortUrl = async (req, res) => {
+    console.log(req.params);
     res.status(200).json(urls)
 }
 
-function fetchUrl(receivedUrl) {
-    console.log("fetch started");
+const urlRedirect = async (req, res) => {
+    const { urlId } = req.params;
+    try {
+        let url = fetchOriginalUrl(urlId);
+        if (url.length > 0) {
+            url = url[0].origUrl;
+            res.status(200).json(url);
+        }
+        else {
+            res.status(404).json({ "Error": "Invalid Short URL" });
+        }
+    }
+    catch (err) {
+        res.status(500).json({ "Error": err })
+    }
+}
+
+function fetchExistingUrl(receivedUrl) {
+    console.log("fetchExistingUrl started");
     return urls.filter((element) => element.origUrl == receivedUrl)
+}
+
+function fetchOriginalUrl(urlId) {
+    console.log("fetchOriginalUrl started");
+    return urls.filter((element) => element.id == urlId)
 }
 
 function createUrl(receivedUrl) {
@@ -45,4 +68,4 @@ function createUrl(receivedUrl) {
     return newUrl;
 }
 
-module.exports = { shortUrl, getAllShortUrl }
+module.exports = { shortUrl, getAllShortUrl, urlRedirect }

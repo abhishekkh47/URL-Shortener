@@ -8,7 +8,7 @@ const shortUrl = async (req, res) => {
         try {
             let url = fetchExistingUrl(origUrl);
             if (url.length > 0) {
-                res.status(200).json(url);
+                res.status(200).json(url[0]);
             }
             else {
                 let url = createUrl(origUrl);
@@ -34,7 +34,8 @@ const urlRedirect = async (req, res) => {
         let url = fetchOriginalUrl(urlId);
         if (url.length > 0) {
             url = url[0].origUrl;
-            res.status(200).json(url);
+            res.redirect(url)
+            // res.status(200).json(url);
         }
         else {
             res.status(404).json({ "Error": "Invalid Short URL" });
